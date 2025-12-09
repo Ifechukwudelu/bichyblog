@@ -48,7 +48,7 @@ $userInfo = [];
       
       <section id="details" class="tab-content card">
         <h2 class="text-2xl font-semibold mb-4">Personal Details</h2>
-        <form action="php/user_allformsprocess.php" method="POST" class="space-y-4 max-w-md mx-auto">
+        <form action="user_allformsprocess.php" method="POST" class="space-y-4 max-w-md mx-auto">
           <input type="hidden" name="form_type" value="update_user">
           <div>
             <label>Name</label>
@@ -94,7 +94,7 @@ $userInfo = [];
 
     <h2 class="text-xl font-bold font-serif mb-4">Update Your Details</h2>
 
-    <form action="php/user_allformsprocess.php" method="POST" class="space-y-4">
+    <form action="user_allformsprocess.php" method="POST" class="space-y-4">
       <input type="hidden" name="form_type" value="update_user">
 
       <div>

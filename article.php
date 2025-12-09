@@ -32,6 +32,16 @@ if (!$post) {
     die("Article not found.");
 }
 
+// Get previous post
+$prevQuery = "SELECT post_id FROM posts WHERE post_id < $post_id ORDER BY post_id DESC LIMIT 1";
+$prevResult = $conn->query($prevQuery);
+$prevPost = $prevResult->fetch_assoc();
+
+// Get next post
+$nextQuery = "SELECT post_id FROM posts WHERE post_id > $post_id ORDER BY post_id ASC LIMIT 1";
+$nextResult = $conn->query($nextQuery);
+$nextPost = $nextResult->fetch_assoc();
+
 ?>
 
 
@@ -144,11 +154,10 @@ if (!$post) {
                 <h1 class="text-2xl font-bold tracking-wide">Bichy Media</h1>
             </div>
             <div class="flex items-center gap-4">
-                <input type="text" placeholder="Search..."
-                    class="border border-[#131313] px-2 py-1 text-sm bg-[#f7f5ee] focus:outline-none">
+                
                 <?php if(!$loggedIn): ?>
-                <a href="#" class="px-3 py-1 bg-[#131313] text-white text-sm hover:bg-gray-800">Login</a>
-                <a href="#" class="px-3 py-1 bg-[#131313] text-white text-sm hover:bg-gray-800">Register</a>
+                <a href="login.php" class="px-3 py-1 bg-[#131313] text-white text-sm hover:bg-gray-800">Login</a>
+                <a href="register.php" class="px-3 py-1 bg-[#131313] text-white text-sm hover:bg-gray-800">Register</a>
                 <?php endif; ?>
             </div>
         </div>
@@ -157,31 +166,33 @@ if (!$post) {
     <main class="pt-28 max-w-6xl mx-auto px-6 flex gap-6">
 
         <div class="flex-1">
-
-            <a href="timeless_media.php" class="text-sm underline opacity-70 hover:opacity-100">← Back to archives</a>
-
+         <?php
+          $backLink = $_GET['from'] ?? 'timeless_media.php';
+         ?>
+            <a href="<?= $backLink ?>" class="text-sm underline opacity-70 hover:opacity-100">← Back to archives</a>
+            
             <h1 class="text-4xl font-bold torn-paper bg-[#f4f1e8] p-6 border border-[#131313] shadow-sm mt-6">
               <?= htmlspecialchars($post['title']); ?>
             </h1>
 
 
             <div class="w-full h-80 bg-cover bg-center mt-8 border border-[#131313] shadow-inner sepia"
-                style="background-image:url('<?= htmlspecialchars($post['image_path']); ?>')"></div>
+                style="background-image:url('user/<?= htmlspecialchars($post['image_path']); ?>')"></div>
 
             <article class="mt-10 bg-[#f7f5ee] p-8 border border-[#131313] shadow-sm leading-loose text-md">
                 <?= nl2br($post['content']); ?>
             </article>
 
             <div class="mt-12 flex items-center gap-4 bg-[#f4f1e8] border border-[#131313] p-6 shadow-sm">
-                <img src="<?= !empty($post['author_image']) ? $post['author_image'] : 'img/lady.webp'; ?>" 
-                class="w-20 h-20 rounded-full border border-[#131313]"
+                <img src="user/<?= !empty($post['author_image']) ? $post['author_image'] : 'img/lady.webp'; ?>" 
+                class="w-20 h-20 bg-cover rounded-full border border-[#131313]"
                 alt="Author">
 
                 <div>
                     <p class="font-semibold">By <?= htmlspecialchars($post['author_name'] ?? "Unknown Author"); ?></p>
 
                     <p class="text-sm opacity-80 mt-1">
-                        Jane is a historian and journalist passionate about preserving the elegance of classic
+                        <?=$post['author_name'];?> is a journalist passionate about preserving the elegance of classic
                         storytelling. She brings old eras to life with a modern lens.
                     </p>
                     <p class="author-signature mt-2">~ <?= htmlspecialchars($post['author_name'] ?? "Unknown Author"); ?></p>
@@ -189,10 +200,19 @@ if (!$post) {
             </div>
 
             <div class="mt-12 flex justify-between items-center">
-                <a href="#" class="px-4 py-2 border border-[#131313] bg-[#f4f1e8] shadow hover:bg-[#ece9df]">← Previous
+                <?php if ($prevPost) : ?>
+                <a href="article.php?id=<?= $prevPost['post_id']; ?>" class="px-4 py-2 border border-[#131313] bg-[#f4f1e8] shadow hover:bg-[#ece9df]">← Previous
                     Story</a>
-                <a href="#" class="px-4 py-2 border border-[#131313] bg-[#f4f1e8] shadow hover:bg-[#ece9df]">Next Story
+                <?php else : ?>
+                <span class="px-4 py-2 text-gray-400">No previous story</span>
+              <?php endif; ?>
+                
+              <?php if ($nextPost) : ?>
+                <a href="article.php?id=<?= $nextPost['post_id']; ?>" class="px-4 py-2 border border-[#131313] bg-[#f4f1e8] shadow hover:bg-[#ece9df]">Next Story
                     →</a>
+                <?php else : ?>
+                <span class="px-4 py-2 text-gray-400">No next story</span>
+              <?php endif; ?>
             </div>
 
             <div class="mt-20 mb-20 flex justify-center">

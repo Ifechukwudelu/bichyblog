@@ -2,8 +2,12 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-
 $user_id = $_SESSION['user_id'] ?? null;
+if (!$user_id) {
+    header("Location: ../login.php");
+}
+
+include_once __DIR__ . '/../php/db_config.php'; 
 include_once __DIR__ . '/../php/auth_check.php';
 
 $message = "";
@@ -18,7 +22,20 @@ if (isset($_SESSION['user_message'])) {
     $message = $_SESSION['user_message'];
     unset($_SESSION['user_message']);
 }
+
+$userQuery = $conn->prepare("SELECT name, email, username FROM users WHERE user_id = ?");
+$userQuery->bind_param("i", $user_id);
+$userQuery->execute();
+$userResult = $userQuery->get_result()->fetch_assoc();
+
+$postQuery = $conn->prepare("SELECT  post_id, user_id, title, content, created_at FROM posts WHERE user_id = ? ORDER BY created_at DESC");
+$postQuery->bind_param("i", $user_id);
+$postQuery->execute();
+$userPosts = $postQuery->get_result();
+
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -82,6 +99,9 @@ if (isset($_SESSION['user_message'])) {
         <a href="../index.php"><img src="../img/bichy_logo.webp" class="w-12 h-12" /></a>
         <h1 class="text-2xl font-bold">Bichy Blog</h1>
       </div>
+       <button id="menuBtn" class="md:hidden px-3 py-1 border border-[#131313]">
+        ☰ Menu
+       </button>
       <a href="../logout.php"
         class="px-3 py-1 border border-[#131313] text-sm hover:bg-[#131313] hover:text-white">Logout</a>
     </div>
@@ -89,7 +109,9 @@ if (isset($_SESSION['user_message'])) {
 
   <div class="pt-20 flex max-w-7xl mx-auto px-4 gap-6">
 
-    <aside class="sidebar w-64 p-4 flex flex-col gap-4">
+    <aside id="sidebar"
+       class="sidebar w-64 p-4 flex flex-col gap-4 fixed md:static top-0 left-0 h-full md:h-auto
+       md:translate-x-0 -translate-x-full transition-transform duration-300 z-40">
       <h2 class="text-xl font-bold mb-4">Dashboard</h2>
       <button onclick="showTab('overview')"
         class="text-left px-3 py-2 w-full hover:bg-[#dadada] transition">Overview</button>
@@ -100,16 +122,59 @@ if (isset($_SESSION['user_message'])) {
       <button onclick="showTab('post')" class="text-left px-3 py-2 w-full hover:bg-[#dadada] transition">Post
         Article</button>
     </aside>
+    <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
 
     <main class="flex-1 flex flex-col gap-6">
 
       <section id="overview" class="tab-content tab-active card">
-        <h2 class="text-2xl font-semibold mb-2">Welcome Back!</h2>
-        <p class="text-sm opacity-80 leading-relaxed">
-          Here you can manage your profile, view your activity, and submit articles to Bichy Blog. Keep our
-          timeless stories alive!
-        </p>
-      </section>
+    <h2 class="text-2xl font-semibold mb-4">Welcome Back, 
+        <span class="font-bold"><?= htmlspecialchars($userResult['name']) ?></span>!
+    </h2>
+
+    <p class="text-sm opacity-80 leading-relaxed mb-6">
+        Manage your profile, view your activity, and submit articles to Bichy Blog.
+    </p>
+
+    <!-- USER QUICK INFO -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-3 border border-[#131313] bg-white shadow">
+            <h3 class="font-semibold">Username</h3>
+            <p class="opacity-75"><?= htmlspecialchars($userResult['username']) ?></p>
+        </div>
+        <div class="p-3 border border-[#131313] bg-white shadow">
+            <h3 class="font-semibold">Email</h3>
+            <p class="opacity-75"><?= htmlspecialchars($userResult['email']) ?></p>
+        </div>
+        <div class="p-3 border border-[#131313] bg-white shadow">
+            <h3 class="font-semibold">Total Posts</h3>
+            <p class="opacity-75"><?= $userPosts->num_rows ?></p>
+        </div>
+    </div>
+
+    <!-- USER POSTS LIST -->
+    <h3 class="text-xl font-semibold mt-6 mb-3">Your Previous Articles</h3>
+
+    <?php if ($userPosts->num_rows === 0): ?>
+        <p class="text-sm opacity-70 italic">You have not posted any articles yet.</p>
+    <?php else: ?>
+        <div class="space-y-4">
+            <?php while ($post = $userPosts->fetch_assoc()): ?>
+                <div class="p-4 border-l-4 border-[#131313] bg-[#f4f1e8] shadow">
+                    <h4 class="text-lg font-bold"><?= htmlspecialchars($post['title']) ?></h4>
+                    <p class="text-sm opacity-70 mb-2">
+                        <?= htmlspecialchars(substr($post['content'], 0, 120)) ?>...
+                    </p>
+                    <a href="../article.php?id=<?= $post['post_id']; ?>"
+                       class="text-xs underline hover:text-[#131313]">
+                        Read Full Article →
+                    </a>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    <?php endif; ?>
+
+</section>
+
 
       <?php include_once __DIR__ . '/php/user_dp.php';?>
       <?php include_once __DIR__ . '/php/user_info.php';?>
@@ -159,6 +224,20 @@ if (isset($_SESSION['user_message'])) {
   </footer>
 
   <script>
+  const menuBtn = document.getElementById("menuBtn");
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+
+  menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("-translate-x-full");
+    overlay.classList.toggle("hidden");
+  });
+
+  overlay.addEventListener("click", () => {
+    sidebar.classList.add("-translate-x-full");
+    overlay.classList.add("hidden");
+  });
+
     function showTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('tab-active'));
       document.getElementById(tabId).classList.add('tab-active');
@@ -172,6 +251,7 @@ if (isset($_SESSION['user_message'])) {
       document.getElementById(tabId).classList.add('tab-active');
     }
   </script>
+   
 <?php include_once __DIR__ . '/../php/messageBox.php';?>
 </body>
 

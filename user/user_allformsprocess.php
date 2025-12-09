@@ -3,8 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include_once __DIR__ . '/../../php/auth_check.php';
-include_once __DIR__ . '/../../php/db_config.php';
+include_once __DIR__ . '/../php/auth_check.php';
+include_once __DIR__ . '/../php/db_config.php';
 
 $message = "";
 $redirectAfter = "";
@@ -12,7 +12,7 @@ $user_id = $_SESSION['user_id'] ?? null;
 
 if (!$user_id) {
     $_SESSION['user_message'] = "Please login to continue.";
-    header("Location: ../../login.php");
+    header("Location: ../login.php");
     exit;
 }
 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $dpPath = null;
 
         if (!empty($_FILES['user_dp']['name'])) {
-            $targetDir = "../user_img/";
+            $targetDir = "user_img/";
             if (!is_dir($targetDir)) {
                 mkdir($targetDir, 0777, true);
             }
@@ -44,22 +44,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->close();
 
             $_SESSION['user_message'] = "Profile picture updated.";
-            header("Location: ../dashboard.php#profile");
+            header("Location: dashboard.php#profile");
             exit;
 
         } else {
             $_SESSION['user_message'] = "No image selected.";
-            header("Location: ../dashboard.php#profile");
+            header("Location: dashboard.php#profile");
             exit;
         }
 
-        
     }
-
 
     if ($form_type === 'update_user') {
 
-        $fullname = trim($_POST['fullname']);
+        $fullname = trim($_POST['name']);
         $email = trim($_POST['email']);
         $username = strtolower(trim($_POST['username']));
         $password = trim($_POST['password']);
@@ -85,11 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $_SESSION['user_message'] = "Profile updated successfully.";
-            header("Location: ../dashboard.php#details");
+            header("Location: dashboard.php#details");
             exit;
         } else {
             $_SESSION['user_message'] = "An error occurred while updating profile.";
-            header("Location: ../dashboard.php#details");
+            header("Location: dashboard.php#details");
             exit;
         }
 
@@ -108,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $postImgPath = null;
 
         if (!empty($_FILES['article_image']['name'])) {
-            $targetDir = "../user_img";
+            $targetDir = "user_img/";
             if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
 
             $postImgPath = $targetDir . basename($_FILES["article_image"]["name"]);
@@ -131,11 +129,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->execute()) {
             $_SESSION['user_message'] = "Article sent for admin approval.";
-            header("Location: ../dashboard.php#post");
+            header("Location: dashboard.php#post");
             exit;
         } else {
             $_SESSION['user_message'] = "Error posting your article.";
-            header("Location: ../dashboard.php#post");
+            header("Location: dashboard.php#post");
             exit;
         }
 

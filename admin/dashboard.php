@@ -114,10 +114,13 @@ if (isset($_SESSION['redirect_after'])) {
 </head>
 
 <body>
-
+    <button id="menuBtn" class="md:hidden px-3 py-1 border border-[#131313]">
+     ☰ Menu
+    </button>
     <div class="flex">
-        <!-- Sidebar -->
-        <div class="sidebar w-64">
+        <div id="sidebar" class="sidebar w-64 fixed md:static top-0 left-0 h-full md:h-auto
+        md:translate-x-0 -translate-x-full transition-transform duration-300 z-40">
+            
             <h1 class="text-2xl font-bold mb-6 text-center">Bichy Admin</h1>
             <a href="#" class="tab-link active" data-tab="overview">Overview</a>
             <a href="#" class="tab-link" data-tab="users">Users</a>
@@ -125,6 +128,8 @@ if (isset($_SESSION['redirect_after'])) {
             <a href="#" class="tab-link" data-tab="profile">Profile</a>
             <a href="admin_logout.php">Log out</a>
         </div>
+        <div id="overlay" class="fixed inset-0 bg-black/40 hidden md:hidden z-30"></div>
+
            
             <?php include_once __DIR__ . '/php/admin_overview.php';?>
             <?php include_once __DIR__ . '/php/admin_viewusers.php';?>
@@ -133,6 +138,20 @@ if (isset($_SESSION['redirect_after'])) {
     </div>
 
     <script>
+       const menuBtn = document.getElementById("menuBtn");
+          const sidebar = document.getElementById("sidebar");
+          const overlay = document.getElementById("overlay");
+
+          menuBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("-translate-x-full");
+            overlay.classList.toggle("hidden");
+          });
+
+          overlay.addEventListener("click", () => {
+            sidebar.classList.add("-translate-x-full");
+            overlay.classList.add("hidden");
+          });
+
         const tabLinks = document.querySelectorAll('.tab-link');
         const tabContents = document.querySelectorAll('.tab-content');
 

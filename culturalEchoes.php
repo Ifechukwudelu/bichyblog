@@ -74,6 +74,28 @@ if (isset($_GET['q']) && !empty($_GET['q'])) {
                 border-color: transparent
             }
         }
+        .link_underline {
+        position: relative;
+        display: inline-block;
+        text-decoration: none;
+        color: #131313; 
+        font-family: "Libre Baskerville", serif; 
+    }
+
+    .link_underline::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -2px; 
+        width: 0%;
+        height: 1px;
+        background-color: #131313; 
+        transition: width 0.3s ease;
+    }
+
+    .link_underline:hover::after {
+        width: 100%;
+    }
     </style>
 </head>
 
@@ -160,10 +182,10 @@ if (isset($_GET['q']) && !empty($_GET['q'])) {
             <div class="border-l-4 border-[#131313] pl-4 bg-[#f4f1e8] p-4 shadow-sm">
 
                 <div class="w-full h-48 bg-cover bg-center mb-4 border border-[#131313] sepia"
-            style="background-image:url('<?= htmlspecialchars($row['image_path']); ?>')"></div>
+            style="background-image:url('user/<?= htmlspecialchars($row['image_path']); ?>')"></div>
 
-                <a href="article.php?id=<?= $row['post_id']; ?>">
-                    <h3 class="text-xl font-semibold">
+                <a href="article.php?id=<?= $row['post_id']; ?>&from=culturalEchoes.php">
+                    <h3 class="link_underline text-xl font-semibold">
                         <?= htmlspecialchars($row['title']); ?>
                     </h3>
                 </a>
@@ -189,11 +211,11 @@ if (isset($_GET['q']) && !empty($_GET['q'])) {
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
       <?php while ($row = $searchResults->fetch_assoc()): ?>
-        <a href="article.php?id=<?= $row['post_id']; ?>" 
+        <a href="article.php?id=<?= $row['post_id']; ?>&from=culturalEchoes.php" 
            class="border-l-4 border-[#131313] pl-4 bg-[#f7f5ee] shadow p-4 block link_underline">
 
           <div class="w-full h-48 bg-cover bg-center mb-4 border border-[#131313]" 
-               style="background-image:url('<?= $row['image_path']; ?>');"></div>
+               style="background-image:url('user/<?= $row['image_path']; ?>');"></div>
 
           <h3 class="text-xl font-semibold mb-2" style="font-family:'Playfair Display', serif;">
             <?= htmlspecialchars($row['title']); ?>

@@ -24,14 +24,14 @@
         <h2 class="text-2xl font-semibold mb-4">Profile Picture</h2>
         <div class="flex gap-6 items-center">
         <?php if (!empty($dpPath)): ?>
-          <img src="user_img/<?= htmlspecialchars($dpPath)?>" alt="profile" class="w-32 h-32 border border-[#131313] shadow-md object-cover">
+          <img src="<?= htmlspecialchars($dpPath)?>" alt="profile" class="w-32 h-32 border border-[#131313] shadow-md object-cover">
         <?php else: ?>
           <img src="../img/lady.webp" alt="Profile" class="w-32 h-32 border border-[#131313] shadow-md object-cover">
         <?php endif; ?>
-          <form action="php/user_allformsprocess.php" method="POST" enctype="multipart/form-data">
+          <form action="user_allformsprocess.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="form_type" value="dp">
             <label class="block mb-2">Upload New Picture</label>
-            <input type="file" class="border border-[#131313] px-2 py-1 mb-2" name="user_dp">
+            <input type="file" class="border border-[#131313] w-full px-2 py-1 mb-2" name="user_dp">
             <button type="submit" class="bg-[#131313] hover:bg-gray-800 text-white px-4 py-1 text-sm">Update</button>
           </form>
         </div>

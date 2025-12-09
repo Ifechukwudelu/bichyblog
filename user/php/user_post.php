@@ -25,7 +25,7 @@
 
         <div id="timeless" class="tab-content tab-active">
           <p class="text-sm opacity-80 mb-2">Share stories crafted from a different era, elegance and depth.</p>
-          <form action="php/user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
+          <form action="user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
             <input type="hidden" name="form_type" value="post_article">
             <input type="hidden" name="category" value="timeless">  
             <input type="text" name="title" placeholder="Article Title" class="w-full border border-[#131313] px-2 py-1">
@@ -39,7 +39,7 @@
 
         <div id="oldny" class="tab-content">
           <p class="text-sm opacity-80 mb-2">Historical scenes and classic tales from the big city.</p>
-          <form action="php/user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
+          <form action="user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
             <input type="hidden" name="form_type" value="post_article">
             <input type="hidden" name="category" value="oldNewYork">  
             <input type="text" name="title" placeholder="Article Title" class="w-full border border-[#131313] px-2 py-1">
@@ -53,7 +53,7 @@
 
         <div id="cultural" class="tab-content">
           <p class="text-sm opacity-80 mb-2">Deep dives into culture, history, and artistic thought.</p>
-          <form action="php/user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
+          <form action="user_allformsprocess.php" method="POST" enctype="multipart/form-data" class="space-y-3">
             <input type="hidden" name="form_type" value="post_article">
             <input type="hidden" name="category" value="cultural">  
             <input type="text" name="title" placeholder="Article Title" class="w-full border border-[#131313] px-2 py-1">
